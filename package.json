@@ -1,0 +1,22 @@
+{
+  "name": "redis-obj",
+  "version": "0.1.0",
+  "description": "Enable easy object storage in Redis using native types.",
+  "main": "dist/index.js",
+  "repository": "https://github.com/appellation/redis-obj.git",
+  "author": "Will Nelson <nelson.will@live.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@types/ioredis": "^3.2.6",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^4.0.1",
+    "ioredis": "^3.2.2",
+    "typescript": "^2.7.2"
+  },
+  "peerDependencies": {
+    "ioredis": "^3.2.2"
+  }
+}

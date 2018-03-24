@@ -7,13 +7,13 @@ const s = new Storage(r);
 (async () => {
   await r.flushall();
 
-  const thing = { key: 'thing' };
-  thing.thing = thing;
+  // const thing = { key: 'thing' };
+  // thing.thing = thing;
 
   await s.set('guild', {
     name: 'xd',
     owner: 'owo',
-    thing,
+    // thing,
     members: {
       id: {
         nick: 'meme',
@@ -33,8 +33,11 @@ const s = new Storage(r);
     ],
   });
 
-  console.log(await r.hgetall('guild'));
-  console.log(await r.hgetall('guild.members'));
-  console.log(await r.hgetall('guild.members.id'));
+  console.log(await s.get('guild'));
+
+  await s.upsert('guild.members', { id: { nick: 'meme2' } });
+  console.log(await s.get('guild'));
+
+  await s.set('guild', { test: 'data' });
   console.log(await s.get('guild'));
 })();

@@ -6,7 +6,7 @@ Simple abstractions for storing complex JSON data in Redis. Supports simple nest
 
 ```js
 const Redis = require('ioredis');
-const Storage = require('redis-obj');
+const Storage = require('rejects');
 
 const r = new Redis();
 const s = new Storage();

@@ -1,9 +1,12 @@
 {
-  "name": "redis-obj",
+  "name": "rejects",
   "version": "0.1.0",
   "description": "Enable easy object storage in Redis using native types.",
   "main": "dist/index.js",
-  "repository": "https://github.com/appellation/redis-obj.git",
+  "scripts": {
+    "prepublish": "gulp"
+  },
+  "repository": "https://github.com/appellation/rejects.git",
   "author": "Will Nelson <nelson.will@live.com>",
   "license": "MIT",
   "private": false,

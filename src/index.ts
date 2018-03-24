@@ -10,13 +10,16 @@ export default class Storage {
     return this._set(this.client.multi(), key, obj).exec();
   }
 
-  protected _set(txn: Redis.Pipeline, key: string, obj: Complex): Redis.Pipeline {
+  protected _set(txn: Redis.Pipeline, key: string, obj: Complex, seen: any[] = []): Redis.Pipeline {
+    if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
+    seen.push(obj);
+
     if (Array.isArray(obj)) return txn.sadd(key, ...obj);
 
     for (const [name, val] of Object.entries(obj)) {
       if (typeof val === 'object' && val !== null) {
         const newKey = `${key}.${name}`;
-        this._set(txn, newKey, val);
+        this._set(txn, newKey, val, seen);
         txn.hset(key, name, `ref:${Array.isArray(val) ? 'arr' : 'obj'}:${newKey}`);
       } else {
         txn.hset(key, name, val);

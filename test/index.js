@@ -7,9 +7,13 @@ const s = new Storage(r);
 (async () => {
   await r.flushall();
 
+  const thing = { key: 'thing' };
+  thing.thing = thing;
+
   await s.set('guild', {
     name: 'xd',
     owner: 'owo',
+    thing,
     members: {
       id: {
         nick: 'meme',

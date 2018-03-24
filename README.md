@@ -41,4 +41,6 @@ const data = await s.get('some key.data.with'); // ['an', 'array']
 
 - **`constructor(redis: Redis)`** - make a new instance and give it an [ioredis](https://github.com/luin/ioredis) client
 - `get(key: string, { full = true })` - get a complex object. If full is true, will resolve all references to nested data.  If full is false, will set the property to a string of the form `ref:<type>:<key>` where type is `arr` (Redis set) or `obj` (Redis hash) and `key` points to the Redis key where the data is stored.
-- `set(key: string, data: any)` - set complex data.
+- `set(key: string, data: any)` - set complex data; will overwrite and remove existing data that is changed or removed in the new data.
+- `upsert(key: string, data: any)` - set complex data; will overwrite but not remove existing data.
+- `delete(key: string)` - delete all complex data at a given key.

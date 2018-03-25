@@ -1,12 +1,8 @@
 import * as Redis from 'ioredis';
+import Reference, { ReferenceType } from './Reference';
 
 export type Primitive = string | boolean | number | null;
 export type Complex = { [key: string]: Complex | Primitive } | Array<Primitive>;
-
-export enum ReferenceType {
-  ARRAY = 'arr',
-  OBJECT = 'obj',
-}
 
 export interface QueryOptions {
   full?: boolean,
@@ -15,29 +11,6 @@ export interface QueryOptions {
 }
 
 export default class Storage {
-  static isReference(str: string) {
-    return str.startsWith('ref:');
-  }
-
-  static reference(str: string) {
-    const [ref, type, key] = str.split(':');
-    if (ref !== 'ref' || !type || !key) throw new Error('attempted to derive reference from non-reference key');
-
-    let refType: ReferenceType;
-    switch (type) {
-      case 'arr':
-        refType = ReferenceType.ARRAY;
-        break;
-      case 'obj':
-        refType = ReferenceType.OBJECT;
-        break;
-      default:
-        throw new Error('attempted to derive reference from non-reference key');
-    }
-
-    return { type: refType, key };
-  }
-
   constructor(public readonly client: Redis.Redis) {}
 
   public delete(key: string, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
@@ -55,8 +28,8 @@ export default class Storage {
         if (typeof data === 'string') throw new Error('cannot delete nested objects using a transaction');
 
         for (const ref of Object.values(data) as string[]) {
-          if (Storage.isReference(ref)) {
-            const { type, key: newKey } = Storage.reference(ref);
+          if (Reference.is(ref)) {
+            const { type, key: newKey } = new Reference(ref).decode();
             this._delete(newKey, { type, full, txn });
           }
         }
@@ -66,8 +39,8 @@ export default class Storage {
     return txn.del(key);
   }
 
-  public upsert(key: string, obj: Complex, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
-  public upsert(key: string, obj: Complex, options?: QueryOptions): PromiseLike<any>;
+  public upsert(key: string, obj: Complex, options: { txn: Redis.Pipeline }): Redis.Pipeline;
+  public upsert(key: string, obj: Complex, options?: { txn?: Redis.Pipeline }): PromiseLike<any>;
   public upsert(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
     const upsert = this._upsert(key, obj, options);
     if (options.txn) return upsert;
@@ -97,7 +70,7 @@ export default class Storage {
         if (typeof val === 'object' && val !== null) {
           const newKey = `${key}.${name}`;
           this._upsert(newKey, val, { txn, seen, building: false });
-          txn.hset(key, name, `ref:${Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT}:${newKey}`);
+          txn.hset(key, name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT));
         } else {
           txn.hset(key, name, val);
         }
@@ -118,12 +91,18 @@ export default class Storage {
 
     const data = await this.client.hgetall(key);
     for (const [name, val] of Object.entries(data) as [string, string][]) {
-      if (Storage.isReference(val) && full) {
-        const { type, key: newKey } = Storage.reference(val);
+      if (Reference.is(val) && full) {
+        const { type, key: newKey } = new Reference(val).decode();
         data[name] = await this.get(newKey, { type, full });
       }
     }
 
     return data;
   }
+}
+
+export {
+  Reference,
+  ReferenceType,
+  Storage,
 }

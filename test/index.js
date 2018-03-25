@@ -29,6 +29,7 @@ const s = new Storage(r);
     },
     nested: {
       key: 'value',
+      list: ['value1', 'value2'],
     },
     list: [
       'item',
@@ -36,11 +37,11 @@ const s = new Storage(r);
     ],
   });
 
-  console.log(await s.get('guild', { full: false }));
+  console.log(await s.get('guild'));
 
   await s.upsert('guild.members', { id: { nick: 'meme2' } });
-  console.log(await s.get('guild', { full: false }));
+  console.log(await s.get('guild'));
 
   await s.set('guild', { test: 'data' });
-  console.log(await s.get('guild', { full: false }));
+  console.log(await s.get('guild'));
 })();

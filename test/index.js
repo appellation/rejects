@@ -35,8 +35,17 @@ const s = new Storage(r);
       'item',
       'other item',
     ],
+    complexList: [
+      {
+        complex: 'value',
+      },
+      {
+        otherComplex: 'value2',
+      },
+    ],
   });
 
+  console.log(await s.get('guild.list', { type: 'arr' }));
   console.log(await s.get('guild'));
 
   await s.upsert('guild.members', { id: { nick: 'meme2' } });

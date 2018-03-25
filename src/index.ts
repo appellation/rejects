@@ -64,7 +64,15 @@ export default class Storage {
       if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
       seen.push(obj);
 
-      if (Array.isArray(obj)) return txn.sadd(key, ...obj);
+      if (Array.isArray(obj)) {
+        const copy: Complex = {};
+        for (const elem of obj) {
+          const uuid = Math.random().toString(36).substring(2, 15);
+          copy[uuid] = elem;
+        }
+
+        obj = copy;
+      }
 
       for (const [name, val] of Object.entries(obj)) {
         if (typeof val === 'object' && val !== null) {
@@ -87,17 +95,19 @@ export default class Storage {
   }
 
   public async get(key: string, { full = true, type = ReferenceType.OBJECT } = {}): Promise<any> {
-    if (type === ReferenceType.ARRAY) return this.client.smembers(key);
-
     const data = await this.client.hgetall(key);
+    const arr = [];
+
     for (const [name, val] of Object.entries(data) as [string, string][]) {
       if (Reference.is(val) && full) {
         const { type, key: newKey } = new Reference(val).decode();
         data[name] = await this.get(newKey, { type, full });
       }
+
+      if (type === ReferenceType.ARRAY) arr.push(data[name]);
     }
 
-    return data;
+    return type === ReferenceType.ARRAY ? arr : data;
   }
 }
 

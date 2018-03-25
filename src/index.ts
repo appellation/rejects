@@ -96,18 +96,15 @@ export default class Storage {
 
   public async get(key: string, { full = true, type = ReferenceType.OBJECT } = {}): Promise<any> {
     const data = await this.client.hgetall(key);
-    const arr = [];
 
     for (const [name, val] of Object.entries(data) as [string, string][]) {
       if (Reference.is(val) && full) {
         const { type, key: newKey } = new Reference(val).decode();
         data[name] = await this.get(newKey, { type, full });
       }
-
-      if (type === ReferenceType.ARRAY) arr.push(data[name]);
     }
 
-    return type === ReferenceType.ARRAY ? arr : data;
+    return type === ReferenceType.ARRAY ? Object.values(data) : data;
   }
 }
 

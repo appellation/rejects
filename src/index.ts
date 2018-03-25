@@ -1,7 +1,7 @@
 import * as Redis from 'ioredis';
 
 export type Primitive = string | boolean | number | null;
-export type Complex = { [key: string]: Complex } | Array<Primitive>;
+export type Complex = { [key: string]: Complex | Primitive } | Array<Primitive>;
 
 export enum ReferenceType {
   ARRAY = 'arr',
@@ -69,24 +69,38 @@ export default class Storage {
   public upsert(key: string, obj: Complex, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
   public upsert(key: string, obj: Complex, options?: QueryOptions): PromiseLike<any>;
   public upsert(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
-    const upsert = this._upsert(key, obj);
+    const upsert = this._upsert(key, obj, options);
     if (options.txn) return upsert;
     return upsert.exec();
   }
 
-  protected _upsert(key: string, obj: Complex, { txn = this.client.multi(), seen = [] }: QueryOptions & { seen?: any[] } = {}): Redis.Pipeline {
-    if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
-    seen.push(obj);
+  protected _upsert(
+    key: string,
+    obj: Complex,
+    {
+      txn = this.client.multi(),
+      seen = [],
+      building = true
+    }: QueryOptions & { seen?: any[], building?: boolean } = {}
+  ): Redis.Pipeline {
+    if (key.includes('.') && building) { // build objects for nested references
+      const route = key.split('.');
+      const newKey = route.pop();
+      if (newKey) this._upsert(route.join('.'), { [newKey]: obj }, { txn, building: true });
+    } else {
+      if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
+      seen.push(obj);
 
-    if (Array.isArray(obj)) return txn.sadd(key, ...obj);
+      if (Array.isArray(obj)) return txn.sadd(key, ...obj);
 
-    for (const [name, val] of Object.entries(obj)) {
-      if (typeof val === 'object' && val !== null) {
-        const newKey = `${key}.${name}`;
-        this._upsert(newKey, val, { txn, seen });
-        txn.hset(key, name, `ref:${Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT}:${newKey}`);
-      } else {
-        txn.hset(key, name, val);
+      for (const [name, val] of Object.entries(obj)) {
+        if (typeof val === 'object' && val !== null) {
+          const newKey = `${key}.${name}`;
+          this._upsert(newKey, val, { txn, seen, building: false });
+          txn.hset(key, name, `ref:${Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT}:${newKey}`);
+        } else {
+          txn.hset(key, name, val);
+        }
       }
     }
 
@@ -96,7 +110,7 @@ export default class Storage {
   public set(key: string, obj: Complex, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
   public set(key: string, obj: Complex, options?: QueryOptions): PromiseLike<any>;
   public set(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
-    return this.delete(key, options).then(() => this.upsert(key, obj, options));
+    return this.delete(key, Object.assign({}, options, { txn: undefined })).then(() => this.upsert(key, obj, options));
   }
 
   public async get(key: string, { full = true, type = ReferenceType.OBJECT } = {}): Promise<any> {

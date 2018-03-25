@@ -35,6 +35,8 @@ Nested data can be directly accessed by concatentating properties together with 
 const data = await s.get('some key.data.with'); // ['an', 'array']
 ```
 
+**Warning:** updating data in this manner may result in lost references, as the library will be unable to track nested objects.
+
 ## Reference
 
 ### `default`

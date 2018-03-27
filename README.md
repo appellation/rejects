@@ -38,7 +38,7 @@ Nested data can be directly accessed and modified by concatentating properties t
 ```js
 const data = await s.get('some key'); // { id: 'some id', ... }
 const with = await s.get('some key.data.with', { type: 'arr' }); // ['an', 'array']
-const update = await s.set('some key.data.array', ['new', 'array']);
+const update = await s.set('some key.data.with', ['new', 'array']);
 ```
 
 Note that the type must be explicitly set to `arr` when directly accessing an array.
@@ -72,7 +72,7 @@ References can be created within arrays to create arrays of references.  The `Re
 ### `default`
 
 - **`constructor(redis: Redis)`** - make a new instance and give it an [ioredis](https://github.com/luin/ioredis) client
-- `get(key: string, { full = true, type = 'obj' })` - get a complex object.  Valid type values are `arr` and `obj` depending on the anticipated data type of the fetched data. If full is true, will resolve all references to nested data.  If full is false, will set the property to a string of the form `ref:<type>:<key>` where type is `arr` or `obj`, and `key` points to the Redis key where the data is stored.
+- `get(key: string, { full = true, type = 'obj', depth = -1 })` - get a complex object.  Valid type values are `arr` and `obj` depending on the anticipated data type of the fetched data. If full is true, will resolve all references to nested data.  If full is false, will set the property to a string of the form `ref:<type>:<key>` where type is `arr` or `obj`, and `key` points to the Redis key where the data is stored. Setting a depth option of 0 or greater will ensure recursion to only the specified depth.
 - `set(key: string, data: any)` - set complex data; will overwrite and remove existing data that is changed or removed in the new data.
 - `upsert(key: string, data: any)` - set complex data; will overwrite but not remove existing data.
 - `delete(key: string)` - delete all complex data at a given key.

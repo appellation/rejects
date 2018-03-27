@@ -39,9 +39,10 @@ Nested data can be directly accessed and modified by concatentating properties t
 const data = await s.get('some key'); // { id: 'some id', ... }
 const with = await s.get('some key.data.with', { type: 'arr' }); // ['an', 'array']
 const update = await s.set('some key.data.with', ['new', 'array']);
+const added = await s.upsert('some key.data.with', ['element']);
 ```
 
-Note that the type must be explicitly set to `arr` when directly accessing an array.
+Note that the type must be explicitly set to `arr` when directly accessing an array.  Upserts are faster than sets, as they do not have to clear out the existing data before adding new data.
 
 References to other data can be created:
 

@@ -1,0 +1,966 @@
+{
+  "afk_cannel_id": null,
+  "afk_timeout": 300,
+  "application_id": null,
+  "channels": {
+    "116691448795103238": {
+      "id": "116691448795103238",
+      "last_message_id": "395570687206621184",
+      "name": "general",
+      "permission_overwrites": [
+        {
+          "allow": 0,
+          "deny": 0,
+          "id": "116691448795103238",
+          "type": "role"
+        }
+      ],
+      "position": 0,
+      "topic": "",
+      "type": 0
+    },
+    "116691448795103239": {
+      "bitrate": 64000,
+      "id": "116691448795103239",
+      "name": "General",
+      "permission_overwrites": [],
+      "position": 0,
+      "type": 2,
+      "user_limit": 0
+    },
+    "116701427287588864": {
+      "bitrate": 64000,
+      "id": "116701427287588864",
+      "name": "AFK",
+      "permission_overwrites": [],
+      "position": 8,
+      "type": 2,
+      "user_limit": 0
+    },
+    "218256108513394689": {
+      "id": "218256108513394689",
+      "last_message_id": "386553106898485258",
+      "name": "test",
+      "permission_overwrites": [
+        {
+          "allow": 0,
+          "deny": 0,
+          "id": "177957658299465728",
+          "type": "role"
+        },
+        {
+          "allow": 1024,
+          "deny": 0,
+          "id": "224965306395787265",
+          "type": "role"
+        },
+        {
+          "allow": 0,
+          "deny": 1024,
+          "id": "116691448795103238",
+          "type": "role"
+        },
+        {
+          "allow": 1024,
+          "deny": 0,
+          "id": "250767800858181632",
+          "type": "member"
+        }
+      ],
+      "position": 1,
+      "topic": "",
+      "type": 0
+    },
+    "229410944860684291": {
+      "id": "229410944860684291",
+      "last_message_id": "304856809070395392",
+      "name": "pleb",
+      "permission_overwrites": [
+        {
+          "allow": 0,
+          "deny": 0,
+          "id": "224970387836895232",
+          "type": "role"
+        },
+        {
+          "allow": 0,
+          "deny": 0,
+          "id": "116691448795103238",
+          "type": "role"
+        }
+      ],
+      "position": 1,
+      "topic": "a place for pleb bot commands",
+      "type": 0
+    },
+    "234189567953993728": {
+      "bitrate": 32000,
+      "id": "234189567953993728",
+      "name": "Memes",
+      "permission_overwrites": [],
+      "position": 1,
+      "type": 2,
+      "user_limit": 0
+    },
+    "240977950885806091": {
+      "id": "240977950885806091",
+      "last_message_id": "365182433047609345",
+      "name": "perfectleysafeforwork",
+      "nsfw": true,
+      "permission_overwrites": [],
+      "position": 2,
+      "topic": "",
+      "type": 0
+    },
+    "246766470543966209": {
+      "bitrate": 64000,
+      "id": "246766470543966209",
+      "name": "Testing",
+      "permission_overwrites": [
+        {
+          "allow": 1048576,
+          "deny": 0,
+          "id": "224965306395787265",
+          "type": "role"
+        },
+        {
+          "allow": 3145728,
+          "deny": 0,
+          "id": "218227587166502923",
+          "type": "member"
+        },
+        {
+          "allow": 0,
+          "deny": 1048576,
+          "id": "116691448795103238",
+          "type": "role"
+        }
+      ],
+      "position": 9,
+      "type": 2,
+      "user_limit": 0
+    },
+    "251139721273671690": {
+      "id": "251139721273671690",
+      "last_message_id": "251139890949914624",
+      "name": "mod-log",
+      "permission_overwrites": [
+        {
+          "allow": 3072,
+          "deny": 0,
+          "id": "224965306395787265",
+          "type": "role"
+        },
+        {
+          "allow": 0,
+          "deny": 1024,
+          "id": "116691448795103238",
+          "type": "role"
+        }
+      ],
+      "position": 5,
+      "topic": "",
+      "type": 0
+    },
+    "269259878214795264": {
+      "bitrate": 64000,
+      "id": "269259878214795264",
+      "name": "Invisi's place, bitches (🍆)",
+      "permission_overwrites": [],
+      "position": 3,
+      "type": 2,
+      "user_limit": 0
+    },
+    "269380005262393345": {
+      "bitrate": 64000,
+      "id": "269380005262393345",
+      "name": "Bigfoot's Place 👣",
+      "permission_overwrites": [],
+      "position": 2,
+      "type": 2,
+      "user_limit": 0
+    },
+    "269381175557095424": {
+      "bitrate": 64000,
+      "id": "269381175557095424",
+      "name": "Nate's Gay Ass Channel",
+      "permission_overwrites": [],
+      "position": 4,
+      "type": 2,
+      "user_limit": 0
+    },
+    "269381368176181248": {
+      "bitrate": 64000,
+      "id": "269381368176181248",
+      "name": "TOTAL APPLEHILATION",
+      "permission_overwrites": [],
+      "position": 5,
+      "type": 2,
+      "user_limit": 0
+    },
+    "269412444043083776": {
+      "bitrate": 64000,
+      "id": "269412444043083776",
+      "name": "Beer, Dip, and Bitches!",
+      "permission_overwrites": [],
+      "position": 6,
+      "type": 2,
+      "user_limit": 0
+    },
+    "269418618020823050": {
+      "id": "269418618020823050",
+      "last_message_id": "275217660663562240",
+      "name": "wot-rage",
+      "permission_overwrites": [],
+      "position": 3,
+      "topic": "🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕🖕",
+      "type": 0
+    },
+    "272631910239305728": {
+      "bitrate": 64000,
+      "id": "272631910239305728",
+      "name": "Everyone else has a channel",
+      "permission_overwrites": [],
+      "position": 7,
+      "type": 2,
+      "user_limit": 0
+    },
+    "284562003849248769": {
+      "bitrate": 64000,
+      "id": "284562003849248769",
+      "name": "Why so many channels?",
+      "permission_overwrites": [],
+      "position": 10,
+      "type": 2,
+      "user_limit": 0
+    }
+  },
+  "default_message_notifications": 0,
+  "emojis": {
+    "269381064139603969": {
+      "animated": false,
+      "id": "269381064139603969",
+      "managed": false,
+      "name": "babyrage",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381083202715648": {
+      "animated": false,
+      "id": "269381083202715648",
+      "managed": false,
+      "name": "dansgame",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381100864929792": {
+      "animated": false,
+      "id": "269381100864929792",
+      "managed": false,
+      "name": "EleGiggle",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381122083913730": {
+      "animated": false,
+      "id": "269381122083913730",
+      "managed": false,
+      "name": "kappa",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381154916925440": {
+      "animated": false,
+      "id": "269381154916925440",
+      "managed": false,
+      "name": "kappapride",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381179310997504": {
+      "animated": false,
+      "id": "269381179310997504",
+      "managed": false,
+      "name": "pg",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381267588382720": {
+      "animated": false,
+      "id": "269381267588382720",
+      "managed": false,
+      "name": "seemsgood",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381361964548098": {
+      "animated": false,
+      "id": "269381361964548098",
+      "managed": false,
+      "name": "kappaross",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381392176119809": {
+      "animated": false,
+      "id": "269381392176119809",
+      "managed": false,
+      "name": "potato",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381730442412032": {
+      "animated": false,
+      "id": "269381730442412032",
+      "managed": false,
+      "name": "feelsbadman",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381770103881728": {
+      "animated": false,
+      "id": "269381770103881728",
+      "managed": false,
+      "name": "feelsamazingman",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381790769086464": {
+      "animated": false,
+      "id": "269381790769086464",
+      "managed": false,
+      "name": "feelsgoodman",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381809538727937": {
+      "animated": false,
+      "id": "269381809538727937",
+      "managed": false,
+      "name": "cigrip",
+      "require_colons": true,
+      "roles": []
+    },
+    "269381840651943940": {
+      "animated": false,
+      "id": "269381840651943940",
+      "managed": false,
+      "name": "lul",
+      "require_colons": true,
+      "roles": []
+    },
+    "278221201170497539": {
+      "animated": false,
+      "id": "278221201170497539",
+      "managed": false,
+      "name": "failfish",
+      "require_colons": true,
+      "roles": []
+    },
+    "319322520023072768": {
+      "animated": false,
+      "id": "319322520023072768",
+      "managed": false,
+      "name": "notlikethis",
+      "require_colons": true,
+      "roles": []
+    },
+    "348879515474329602": {
+      "animated": false,
+      "id": "348879515474329602",
+      "managed": false,
+      "name": "wutface",
+      "require_colons": true,
+      "roles": []
+    },
+    "351850078836883467": {
+      "animated": false,
+      "id": "351850078836883467",
+      "managed": false,
+      "name": "weSmart",
+      "require_colons": true,
+      "roles": []
+    },
+    "352896745577119755": {
+      "animated": false,
+      "id": "352896745577119755",
+      "managed": false,
+      "name": "AngryArthur",
+      "require_colons": true,
+      "roles": []
+    },
+    "356302450053087232": {
+      "animated": false,
+      "id": "356302450053087232",
+      "managed": false,
+      "name": "hyperlul",
+      "require_colons": true,
+      "roles": []
+    },
+    "375422863588720640": {
+      "animated": false,
+      "id": "375422863588720640",
+      "managed": false,
+      "name": "pogchamp",
+      "require_colons": true,
+      "roles": []
+    }
+  },
+  "explicit_content_filter": 0,
+  "features": [],
+  "icon": "b881ab71ba7739a054abc377f1d7c0a1",
+  "id": "116691448795103238",
+  "joined_at": "2017-09-26T06:43:29.161000+00:00",
+  "large": false,
+  "member_count": 31,
+  "members": {
+    "116690352584392704": {
+      "deaf": false,
+      "joined_at": "2015-11-19T00:10:09.912000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728",
+        "240976668573958145"
+      ],
+      "user": "ref:obj:users.116690352584392704",
+      "guild_id": "116691448795103238",
+      "id": "116690352584392704"
+    },
+    "123196020740849673": {
+      "deaf": false,
+      "joined_at": "2015-12-06T22:57:00.255000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.123196020740849673",
+      "guild_id": "116691448795103238",
+      "id": "123196020740849673"
+    },
+    "125974614290595840": {
+      "deaf": false,
+      "joined_at": "2017-09-04T03:35:45.846000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.125974614290595840",
+      "guild_id": "116691448795103238",
+      "id": "125974614290595840"
+    },
+    "127552585593782272": {
+      "deaf": false,
+      "joined_at": "2016-05-16T00:07:25.391000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.127552585593782272",
+      "guild_id": "116691448795103238",
+      "id": "127552585593782272"
+    },
+    "130937802786471937": {
+      "deaf": false,
+      "joined_at": "2017-01-13T09:38:12.327000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.130937802786471937",
+      "guild_id": "116691448795103238",
+      "id": "130937802786471937"
+    },
+    "159800228088774656": {
+      "deaf": false,
+      "joined_at": "2016-10-14T21:19:59.792000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265",
+        "236599010100510730"
+      ],
+      "user": "ref:obj:users.159800228088774656",
+      "guild_id": "116691448795103238",
+      "id": "159800228088774656"
+    },
+    "160264267331796992": {
+      "deaf": false,
+      "joined_at": "2016-11-26T01:08:01.601000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.160264267331796992",
+      "guild_id": "116691448795103238",
+      "id": "160264267331796992"
+    },
+    "163385076917207050": {
+      "deaf": false,
+      "joined_at": "2017-01-24T00:31:05.783000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.163385076917207050",
+      "guild_id": "116691448795103238",
+      "id": "163385076917207050"
+    },
+    "169969829342609410": {
+      "deaf": false,
+      "joined_at": "2016-05-11T02:24:04.127000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.169969829342609410",
+      "guild_id": "116691448795103238",
+      "id": "169969829342609410"
+    },
+    "171003735634477056": {
+      "deaf": false,
+      "joined_at": "2016-07-18T16:53:06.276000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.171003735634477056",
+      "guild_id": "116691448795103238",
+      "id": "171003735634477056"
+    },
+    "177958239370084354": {
+      "deaf": false,
+      "joined_at": "2016-05-06T01:42:30.664000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.177958239370084354",
+      "guild_id": "116691448795103238",
+      "id": "177958239370084354"
+    },
+    "179350621399416832": {
+      "deaf": false,
+      "joined_at": "2016-05-09T21:55:20.341000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.179350621399416832",
+      "guild_id": "116691448795103238",
+      "id": "179350621399416832"
+    },
+    "180112527680733184": {
+      "deaf": false,
+      "joined_at": "2016-11-02T03:24:56.582000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.180112527680733184",
+      "guild_id": "116691448795103238",
+      "id": "180112527680733184"
+    },
+    "186379570906136576": {
+      "deaf": false,
+      "joined_at": "2017-01-26T06:53:59.990000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.186379570906136576",
+      "guild_id": "116691448795103238",
+      "id": "186379570906136576"
+    },
+    "190161804683509762": {
+      "deaf": false,
+      "joined_at": "2016-11-25T23:05:10.305000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.190161804683509762",
+      "guild_id": "116691448795103238",
+      "id": "190161804683509762"
+    },
+    "208510158739865601": {
+      "deaf": false,
+      "joined_at": "2016-07-29T09:04:56.897000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728",
+        "240976668573958145",
+        "250467323612364800"
+      ],
+      "user": "ref:obj:users.208510158739865601",
+      "guild_id": "116691448795103238",
+      "id": "208510158739865601"
+    },
+    "213152142750384130": {
+      "deaf": false,
+      "joined_at": "2016-08-11T04:30:31.313000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.213152142750384130",
+      "guild_id": "116691448795103238",
+      "id": "213152142750384130"
+    },
+    "218227587166502923": {
+      "deaf": false,
+      "joined_at": "2016-09-12T19:12:00.176000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265",
+        "224970387836895232"
+      ],
+      "user": "ref:obj:users.218227587166502923",
+      "guild_id": "116691448795103238",
+      "id": "218227587166502923"
+    },
+    "218844420613734401": {
+      "deaf": false,
+      "joined_at": "2017-09-26T06:43:29.161000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265"
+      ],
+      "user": "ref:obj:users.218844420613734401",
+      "guild_id": "116691448795103238",
+      "id": "218844420613734401"
+    },
+    "219335780248584193": {
+      "deaf": false,
+      "joined_at": "2017-01-19T00:24:39.700000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.219335780248584193",
+      "guild_id": "116691448795103238",
+      "id": "219335780248584193"
+    },
+    "221091538959204362": {
+      "deaf": false,
+      "joined_at": "2016-09-08T23:26:00.855000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.221091538959204362",
+      "guild_id": "116691448795103238",
+      "id": "221091538959204362"
+    },
+    "221490709398683648": {
+      "deaf": false,
+      "joined_at": "2017-01-26T23:15:16.309000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.221490709398683648",
+      "guild_id": "116691448795103238",
+      "id": "221490709398683648"
+    },
+    "223977046563356672": {
+      "deaf": false,
+      "joined_at": "2016-10-02T04:13:16.056000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.223977046563356672",
+      "guild_id": "116691448795103238",
+      "id": "223977046563356672"
+    },
+    "226467747993747458": {
+      "deaf": false,
+      "joined_at": "2017-01-24T04:42:50.175000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.226467747993747458",
+      "guild_id": "116691448795103238",
+      "id": "226467747993747458"
+    },
+    "250767800858181632": {
+      "deaf": false,
+      "joined_at": "2016-11-24T00:20:21.479000+00:00",
+      "mute": false,
+      "roles": [],
+      "user": "ref:obj:users.250767800858181632",
+      "guild_id": "116691448795103238",
+      "id": "250767800858181632"
+    },
+    "251253454826110977": {
+      "deaf": false,
+      "joined_at": "2016-11-26T01:10:25.567000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265",
+        "251877289959096320"
+      ],
+      "user": "ref:obj:users.251253454826110977",
+      "guild_id": "116691448795103238",
+      "id": "251253454826110977"
+    },
+    "255486082622160907": {
+      "deaf": false,
+      "joined_at": "2016-12-06T00:14:20.682000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265"
+      ],
+      "user": "ref:obj:users.255486082622160907",
+      "guild_id": "116691448795103238",
+      "id": "255486082622160907"
+    },
+    "265994880461832192": {
+      "deaf": false,
+      "joined_at": "2017-01-14T08:46:09.845000+00:00",
+      "mute": false,
+      "roles": [
+        "224965306395787265",
+        "269748985596477440"
+      ],
+      "user": "ref:obj:users.265994880461832192",
+      "guild_id": "116691448795103238",
+      "id": "265994880461832192"
+    },
+    "269371693531791360": {
+      "deaf": false,
+      "joined_at": "2017-01-13T07:47:23.245000+00:00",
+      "mute": false,
+      "nick": "jack (squatch)",
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.269371693531791360",
+      "guild_id": "116691448795103238",
+      "id": "269371693531791360"
+    },
+    "269885610183884800": {
+      "deaf": false,
+      "joined_at": "2017-01-14T17:49:11.618000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.269885610183884800",
+      "guild_id": "116691448795103238",
+      "id": "269885610183884800"
+    },
+    "307370018222637066": {
+      "deaf": false,
+      "joined_at": "2017-05-24T03:25:00.533000+00:00",
+      "mute": false,
+      "roles": [
+        "177957658299465728"
+      ],
+      "user": "ref:obj:users.307370018222637066",
+      "guild_id": "116691448795103238",
+      "id": "307370018222637066"
+    }
+  },
+  "mfa_level": 0,
+  "name": "Saltier House of Plebs",
+  "owner_id": "116690352584392704",
+  "presences": [
+    {
+      "game": {
+        "assets": {
+          "large_image": "spotify:23f34e014681b5866454e7e8d55f9f349169e92e",
+          "large_text": "AVĪCI (01)"
+        },
+        "details": "Friend Of Mine (feat. Vargas & Lagola)",
+        "flags": 48,
+        "name": "Spotify",
+        "party": {
+          "id": "spotify:116690352584392704"
+        },
+        "session_id": "ab3099df180414570208bcd630fac3ce",
+        "state": "Avicii; Vargas & Lagola",
+        "sync_id": "79UX8fkSsowWI1HOd8VoYt",
+        "timestamps": {
+          "end": "1522085392313",
+          "start": "1522085232450"
+        },
+        "type": 2
+      },
+      "status": "online",
+      "user": {
+        "id": "116690352584392704"
+      }
+    },
+    {
+      "game": null,
+      "status": "dnd",
+      "user": {
+        "id": "125974614290595840"
+      }
+    },
+    {
+      "game": {
+        "name": "airhornbot.com",
+        "type": 0
+      },
+      "status": "online",
+      "user": {
+        "id": "159800228088774656"
+      }
+    },
+    {
+      "game": {
+        "name": "Counter Rocket Tanks V",
+        "timestamps": {
+          "start": "1522050587448"
+        },
+        "type": 0
+      },
+      "status": "idle",
+      "user": {
+        "id": "160264267331796992"
+      }
+    },
+    {
+      "game": null,
+      "status": "idle",
+      "user": {
+        "id": "163385076917207050"
+      }
+    },
+    {
+      "game": {
+        "application_id": "377212089443549194",
+        "assets": {
+          "large_image": "390567654118785024",
+          "small_image": "391240887067475968"
+        },
+        "details": "In Menus",
+        "name": "Fortnite",
+        "party": {
+          "id": "8AEACB75479B08459633168B031D587C",
+          "size": [
+            3,
+            4
+          ]
+        },
+        "state": "Battle Royale",
+        "type": 0
+      },
+      "status": "online",
+      "user": {
+        "id": "190161804683509762"
+      }
+    },
+    {
+      "game": null,
+      "status": "online",
+      "user": {
+        "id": "218227587166502923"
+      }
+    },
+    {
+      "game": null,
+      "status": "online",
+      "user": {
+        "id": "218844420613734401"
+      }
+    },
+    {
+      "game": null,
+      "status": "idle",
+      "user": {
+        "id": "226467747993747458"
+      }
+    }
+  ],
+  "region": "us-west",
+  "roles": {
+    "116691448795103238": {
+      "color": 0,
+      "hoist": false,
+      "id": "116691448795103238",
+      "managed": false,
+      "mentionable": false,
+      "name": "@everyone",
+      "permissions": 37080129,
+      "position": 0
+    },
+    "177957658299465728": {
+      "color": 1752220,
+      "hoist": false,
+      "id": "177957658299465728",
+      "managed": false,
+      "mentionable": false,
+      "name": "awesomesauce",
+      "permissions": 1610083415,
+      "position": 10
+    },
+    "224965306395787265": {
+      "color": 3447003,
+      "hoist": false,
+      "id": "224965306395787265",
+      "managed": false,
+      "mentionable": false,
+      "name": "Bots",
+      "permissions": 64,
+      "position": 9
+    },
+    "224970387836895232": {
+      "color": 0,
+      "hoist": false,
+      "id": "224970387836895232",
+      "managed": true,
+      "mentionable": false,
+      "name": "Pleb",
+      "permissions": 3435524,
+      "position": 5
+    },
+    "236599010100510730": {
+      "color": 0,
+      "hoist": false,
+      "id": "236599010100510730",
+      "managed": true,
+      "mentionable": false,
+      "name": "AIRHORN SOLUTIONS",
+      "permissions": 3411008,
+      "position": 4
+    },
+    "240976668573958145": {
+      "color": 0,
+      "hoist": false,
+      "id": "240976668573958145",
+      "managed": false,
+      "mentionable": false,
+      "name": "nsfw",
+      "permissions": 0,
+      "position": 1
+    },
+    "250467323612364800": {
+      "color": 0,
+      "hoist": false,
+      "id": "250467323612364800",
+      "managed": false,
+      "mentionable": false,
+      "name": "no-pleb",
+      "permissions": 37080129,
+      "position": 2
+    },
+    "251877289959096320": {
+      "color": 0,
+      "hoist": false,
+      "id": "251877289959096320",
+      "managed": true,
+      "mentionable": false,
+      "name": "Monstercat",
+      "permissions": 3407936,
+      "position": 7
+    },
+    "269748985596477440": {
+      "color": 0,
+      "hoist": false,
+      "id": "269748985596477440",
+      "managed": true,
+      "mentionable": false,
+      "name": "Vogon",
+      "permissions": 289878,
+      "position": 3
+    }
+  },
+  "splash": null,
+  "system_channel_id": null,
+  "unavailable": false,
+  "verification_level": 0,
+  "voice_states": {}
+}

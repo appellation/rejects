@@ -94,13 +94,32 @@ export default class Storage {
     return this.delete(key, Object.assign({}, options, { txn: undefined })).then(() => this.upsert(key, obj, options));
   }
 
-  public async get(key: string, { full = true, type = ReferenceType.OBJECT } = {}): Promise<any> {
+  public async get(key: string, opts?: { full?: boolean, type?: ReferenceType, depth?: number }) {
+    return this._get(key, opts);
+  }
+
+  protected async _get(
+    key: string,
+    {
+      full = true,
+      type = ReferenceType.OBJECT,
+      depth = -1,
+      currentDepth = 0
+    }: {
+      full?: boolean;
+      type?: ReferenceType;
+      depth?: number;
+      currentDepth?: number;
+    } = {}
+  ): Promise<any> {
     const data = await this.client.hgetall(key);
 
-    for (const [name, val] of Object.entries(data) as [string, string][]) {
-      if (Reference.is(val) && full) {
-        const { type, key: newKey } = new Reference(val).decode();
-        data[name] = await this.get(newKey, { type, full });
+    if (depth < 0 || currentDepth < depth) {
+      for (const [name, val] of Object.entries(data) as [string, string][]) {
+        if (Reference.is(val) && full) {
+          const { type, key: newKey } = new Reference(val).decode();
+          data[name] = await this._get(newKey, { type, full, depth, currentDepth: currentDepth + 1 });
+        }
       }
     }
 

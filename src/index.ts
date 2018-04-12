@@ -42,6 +42,19 @@ export default class Storage {
   public upsert(key: string, obj: Complex, options: { txn: Redis.Pipeline }): Redis.Pipeline;
   public upsert(key: string, obj: Complex, options?: { txn?: Redis.Pipeline }): PromiseLike<any>;
   public upsert(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
+    if (key.includes('.')) {
+      const route = key.split('.');
+      let newKey: string | undefined;
+      while (newKey = route.pop()) {
+        if (route.length) {
+          obj = { [newKey]: obj };
+        } else {
+          key = newKey;
+          break;
+        }
+      }
+    }
+
     const upsert = this._upsert(key, obj, options);
     if (options.txn) return upsert;
     return upsert.exec();
@@ -53,35 +66,28 @@ export default class Storage {
     {
       txn = this.client.multi(),
       seen = [],
-      building = true
-    }: QueryOptions & { seen?: any[], building?: boolean } = {}
+    }: QueryOptions & { seen?: any[] } = {}
   ): Redis.Pipeline {
-    if (key.includes('.') && building) { // build objects for nested references
-      const route = key.split('.');
-      const newKey = route.pop();
-      if (newKey) this._upsert(route.join('.'), { [newKey]: obj }, { txn, building: true });
-    } else {
-      if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
-      seen.push(obj);
+    if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
+    seen.push(obj);
 
-      if (Array.isArray(obj)) {
-        const copy: Complex = {};
-        for (const elem of obj) {
-          const uuid = Math.random().toString(36).substring(2, 15);
-          copy[uuid] = elem;
-        }
-
-        obj = copy;
+    if (Array.isArray(obj)) {
+      const copy: Complex = {};
+      for (const elem of obj) {
+        const uuid = Math.random().toString(36).substring(2, 15);
+        copy[uuid] = elem;
       }
 
-      for (const [name, val] of Object.entries(obj)) {
-        if (typeof val === 'object' && val !== null) {
-          const newKey = `${key}.${name}`;
-          this._upsert(newKey, val, { txn, seen, building: false });
-          txn.hset(key, name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT));
-        } else {
-          txn.hset(key, name, val);
-        }
+      obj = copy;
+    }
+
+    for (const [name, val] of Object.entries(obj)) {
+      if (typeof val === 'object' && val !== null) {
+        const newKey = `${key}.${name}`;
+        this._upsert(newKey, val, { txn, seen });
+        txn.hset(key, name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT));
+      } else {
+        txn.hset(key, name, val);
       }
     }
 

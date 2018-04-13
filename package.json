@@ -1,11 +1,12 @@
 {
   "name": "rejects",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Enable easy object storage in Redis using native types.",
   "main": "dist/index.js",
   "types": "typings/index.d.ts",
   "scripts": {
-    "prepublish": "gulp"
+    "prepublish": "gulp",
+    "dev": "gulp && node test/index.js"
   },
   "repository": "https://github.com/appellation/rejects.git",
   "author": "Will Nelson <nelson.will@live.com>",

@@ -13,30 +13,22 @@ export interface QueryOptions {
 export default class Storage {
   constructor(public readonly client: Redis.Redis) {}
 
-  public delete(key: string, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
-  public delete(key: string, options?: QueryOptions): PromiseLike<any>;
-  public delete(key: string, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
-    const del = this._delete(key, options);
-    if (options.txn) return del;
-    return del.exec();
-  }
+  public async delete(key: string, { full = true } = {}): Promise<any> {
+    if (full) {
+      const data = await this.client.hgetall(key);
+      const promises = [];
 
-  protected _delete(key: string, { full = true, type = ReferenceType.OBJECT, txn = this.client.pipeline() }: QueryOptions): Redis.Pipeline {
-    if (type === 'obj' && full) {
-      txn.hgetall(key, (err, data) => {
-        if (err) throw err;
-        if (typeof data === 'string') throw new Error('cannot delete nested objects using a transaction');
-
-        for (const ref of Object.values(data) as string[]) {
-          if (Reference.is(ref)) {
-            const { type, key: newKey } = new Reference(ref).decode();
-            this._delete(newKey, { type, full, txn });
-          }
+      for (const ref of Object.values(data) as string[]) {
+        if (Reference.is(ref)) {
+          const { type, key: newKey } = new Reference(ref).decode();
+          promises.push(this.delete(newKey, { full }));
         }
-      });
+      }
+
+      if (promises.length) await Promise.all(promises);
     }
 
-    return txn.del(key);
+    return this.client.del(key);
   }
 
   public upsert(key: string, obj: Complex, options: { txn: Redis.Pipeline }): Redis.Pipeline;
@@ -94,10 +86,10 @@ export default class Storage {
     return txn;
   }
 
-  public set(key: string, obj: Complex, options: QueryOptions & { txn: Redis.Pipeline }): Redis.Pipeline;
-  public set(key: string, obj: Complex, options?: QueryOptions): PromiseLike<any>;
-  public set(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
-    return this.delete(key, Object.assign({}, options, { txn: undefined })).then(() => this.upsert(key, obj, options));
+  public set(key: string, obj: Complex, options?: QueryOptions): Promise<any>;
+  public async set(key: string, obj: Complex, options: QueryOptions = {}): Promise<any> {
+    await this.delete(key);
+    return this.upsert(key, obj, options);
   }
 
   public async get(key: string, opts?: { full?: boolean, type?: ReferenceType, depth?: number }) {

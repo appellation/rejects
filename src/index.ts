@@ -82,7 +82,7 @@ export default class Storage {
     }
 
     for (const [name, val] of Object.entries(obj)) {
-      if (typeof val === 'object' && val !== null) {
+      if (typeof val === 'object' && !(val instanceof Reference) && val !== null) {
         const newKey = `${key}.${name}`;
         this._upsert(newKey, val, { txn, seen });
         txn.hset(key, name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT));

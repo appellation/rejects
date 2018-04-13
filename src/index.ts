@@ -126,6 +126,14 @@ export default class Storage {
 
     return type === ReferenceType.ARRAY ? Object.values(data) : data;
   }
+
+  public keys(key: string): PromiseLike<any[]> {
+    return this.client.hkeys(key);
+  }
+
+  public size(key: string): PromiseLike<number> {
+    return this.client.hlen(key);
+  }
 }
 
 export {

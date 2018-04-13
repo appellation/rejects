@@ -113,6 +113,7 @@ export default class Storage {
     } = {}
   ): Promise<any> {
     const data = await this.client.hgetall(key);
+    if (!Object.keys(data).length) return null;
 
     if (depth < 0 || currentDepth < depth) {
       for (const [name, val] of Object.entries(data) as [string, string][]) {

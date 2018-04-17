@@ -1,6 +1,6 @@
 {
   "name": "rejects",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Enable easy object storage in Redis using native types.",
   "main": "dist/index.js",
   "types": "typings/index.d.ts",

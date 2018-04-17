@@ -125,6 +125,20 @@ export default class Storage {
     return type === ReferenceType.ARRAY ? Object.values(data) : data;
   }
 
+  public incr(key: string, amt: number = 1): PromiseLike<number> {
+    if (!key.includes('.')) return Promise.reject(new Error(`key "${key}" does not contain any fields`));
+    const isFloat = Math.floor(amt) !== amt;
+
+    const route = key.split('.');
+    const field = route.pop();
+    if (field && route.length) {
+      if (isFloat) return this.client.hincrbyfloat(route.join('.'), field, amt);
+      return this.client.hincrby(route.join('.'), field, amt);
+    }
+
+    return Promise.reject(new Error(`error parsing key "${key}" for increment`));
+  }
+
   public keys(key: string): PromiseLike<any[]> {
     return this.client.hkeys(key);
   }

@@ -66,7 +66,7 @@ References can be created within arrays to create arrays of references.  The `Re
 ## Caveats
 
 - do not store hashes with values beginning with `ref:`, as this is will confuse the library and produce errors when fetching nested data.
-- array entries can never be overridden unless you delete the entire entry and re-add the elements.  *caveat:* this is actually a lie, but not supported by the library.
+- array entries can never be overridden unless you delete the entire entry and re-add the elements.
 
 ## Reference
 
@@ -77,3 +77,6 @@ References can be created within arrays to create arrays of references.  The `Re
 - `set(key: string, data: any)` - set complex data; will overwrite and remove existing data that is changed or removed in the new data.
 - `upsert(key: string, data: any)` - set complex data; will overwrite but not remove existing data.
 - `delete(key: string)` - delete all complex data at a given key.
+- `keys(key: string)` - get the keys of the object at `key`.
+- `size(key: string)` - get the size of the object at `key`.
+- `incr(key: string, count = 1)` - increment the value at `key` by `count`.

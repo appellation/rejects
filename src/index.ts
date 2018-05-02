@@ -2,38 +2,29 @@ import * as Redis from 'ioredis';
 import Reference, { ReferenceType } from './Reference';
 
 export type Primitive = string | boolean | number | null;
-export type Complex = { [key: string]: Complex | Primitive } | Array<Primitive>;
-
-export interface QueryOptions {
-  full?: boolean,
-  type?: ReferenceType,
-  txn?: Redis.Pipeline,
-}
+export type Complex = Primitive[] | { [key: string]: Complex | Primitive };
 
 export default class Storage {
   constructor(public readonly client: Redis.Redis) {}
 
-  public async delete(key: string, { full = true } = {}): Promise<any> {
-    if (full) {
-      const data = await this.client.hgetall(key);
-      const promises = [];
+  public async delete(key: string): Promise<number> {
+    const data = await this.client.hgetall(key);
+    const promises = [];
 
-      for (const ref of Object.values(data) as string[]) {
-        if (Reference.is(ref)) {
-          const { type, key: newKey } = new Reference(ref).decode();
-          promises.push(this.delete(newKey, { full }));
-        }
+    for (const ref of Object.values(data) as string[]) {
+      if (Reference.is(ref)) {
+        const { type, key: newKey } = new Reference(ref).decode();
+        promises.push(this.delete(newKey));
       }
-
-      if (promises.length) await Promise.all(promises);
     }
 
+    if (promises.length) await Promise.all(promises);
     return this.client.del(key);
   }
 
   public upsert(key: string, obj: Complex, options: { txn: Redis.Pipeline }): Redis.Pipeline;
-  public upsert(key: string, obj: Complex, options?: { txn?: Redis.Pipeline }): PromiseLike<any>;
-  public upsert(key: string, obj: Complex, options: QueryOptions = {}): PromiseLike<any> | Redis.Pipeline {
+  public upsert<T = any>(key: string, obj: Complex, options?: { txn?: undefined }): PromiseLike<T>;
+  public upsert<T = any>(key: string, obj: Complex, options: { txn?: Redis.Pipeline } = {}): PromiseLike<T> | Redis.Pipeline {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -58,7 +49,7 @@ export default class Storage {
     {
       txn = this.client.multi(),
       seen = [],
-    }: QueryOptions & { seen?: any[] } = {}
+    }: { txn?: Redis.Pipeline, seen?: any[] } = {}
   ): Redis.Pipeline {
     if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
     seen.push(obj);
@@ -86,25 +77,22 @@ export default class Storage {
     return txn;
   }
 
-  public set(key: string, obj: Complex, options?: QueryOptions): Promise<any>;
-  public async set(key: string, obj: Complex, options: QueryOptions = {}): Promise<any> {
+  public async set(key: string, obj: Complex): Promise<any> {
     await this.delete(key);
-    return this.upsert(key, obj, options);
+    return this.upsert(key, obj);
   }
 
-  public async get(key: string, opts?: { full?: boolean, type?: ReferenceType, depth?: number }) {
+  public async get(key: string, opts?: { type?: ReferenceType, depth?: number }) {
     return this._get(key, opts);
   }
 
   protected async _get(
     key: string,
     {
-      full = true,
       type = ReferenceType.OBJECT,
       depth = -1,
       currentDepth = 0
     }: {
-      full?: boolean;
       type?: ReferenceType;
       depth?: number;
       currentDepth?: number;
@@ -115,9 +103,9 @@ export default class Storage {
 
     if (depth < 0 || currentDepth < depth) {
       for (const [name, val] of Object.entries(data) as [string, string][]) {
-        if (Reference.is(val) && full) {
+        if (Reference.is(val)) {
           const { type, key: newKey } = new Reference(val).decode();
-          data[name] = await this._get(newKey, { type, full, depth, currentDepth: currentDepth + 1 });
+          data[name] = await this._get(newKey, { type, depth, currentDepth: currentDepth + 1 });
         }
       }
     }

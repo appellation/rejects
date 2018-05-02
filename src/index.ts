@@ -1,9 +1,6 @@
 import * as Redis from 'ioredis';
 import Reference, { ReferenceType } from './Reference';
 
-export type Primitive = string | boolean | number | null;
-export type Complex = Primitive[] | { [key: string]: Complex | Primitive };
-
 export default class Storage {
   constructor(public readonly client: Redis.Redis) {}
 
@@ -22,9 +19,9 @@ export default class Storage {
     return this.client.del(key);
   }
 
-  public upsert(key: string, obj: Complex, options: { txn: Redis.Pipeline }): Redis.Pipeline;
-  public upsert<T = any>(key: string, obj: Complex, options?: { txn?: undefined }): PromiseLike<T>;
-  public upsert<T = any>(key: string, obj: Complex, options: { txn?: Redis.Pipeline } = {}): PromiseLike<T> | Redis.Pipeline {
+  public upsert(key: string, obj: object, options: { txn: Redis.Pipeline }): Redis.Pipeline;
+  public upsert<T = any>(key: string, obj: object, options?: { txn?: undefined }): PromiseLike<T>;
+  public upsert<T = any>(key: string, obj: object, options: { txn?: Redis.Pipeline } = {}): PromiseLike<T> | Redis.Pipeline {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -45,7 +42,7 @@ export default class Storage {
 
   protected _upsert(
     key: string,
-    obj: Complex,
+    obj: object,
     {
       txn = this.client.multi(),
       seen = [],
@@ -55,7 +52,7 @@ export default class Storage {
     seen.push(obj);
 
     if (Array.isArray(obj)) {
-      const copy: Complex = {};
+      const copy: any = {};
       for (const elem of obj) {
         const uuid = Math.random().toString(36).substring(2, 15);
         copy[uuid] = elem;
@@ -77,7 +74,7 @@ export default class Storage {
     return txn;
   }
 
-  public async set(key: string, obj: Complex): Promise<any> {
+  public async set(key: string, obj: object): Promise<any> {
     await this.delete(key);
     return this.upsert(key, obj);
   }

@@ -1,5 +1,5 @@
 import * as Redis from 'ioredis';
-import { chunk, isObjectLike, flatten, set } from 'lodash';
+import { chunk, isObjectLike, flatten } from 'lodash';
 import Reference, { ReferenceType } from './Reference';
 
 export default class Rejects {

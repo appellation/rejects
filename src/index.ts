@@ -1,12 +1,16 @@
 import * as Redis from 'ioredis';
 import Reference, { ReferenceType } from './Reference';
 
-export default class Storage {
+function isObject(obj: any): obj is object {
+  return typeof obj === 'object' && obj !== null;
+}
+
+export default class Rejects {
   constructor(public readonly client: Redis.Redis) {}
 
   public async delete(key: string): Promise<number> {
     const data = await this.client.hgetall(key);
-    const promises = [];
+    const promises: Promise<number>[] = [];
 
     for (const ref of Object.values(data) as string[]) {
       if (Reference.is(ref)) {
@@ -19,9 +23,7 @@ export default class Storage {
     return this.client.del(key);
   }
 
-  public upsert(key: string, obj: object, options: { txn: Redis.Pipeline }): Redis.Pipeline;
-  public upsert<T = any>(key: string, obj: object, options?: { txn?: undefined }): PromiseLike<T>;
-  public upsert<T = any>(key: string, obj: object, options: { txn?: Redis.Pipeline } = {}): PromiseLike<T> | Redis.Pipeline {
+  public upsert(key: string, obj: object): Promise<Array<0 | 1>> {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -35,21 +37,17 @@ export default class Storage {
       }
     }
 
-    const upsert = this._upsert(key, obj, options);
-    if (options.txn) return upsert;
-    return upsert.exec();
+    return this._upsert(key, obj);
   }
 
-  protected _upsert(
+  protected async _upsert(
     key: string,
     obj: object,
-    {
-      txn = this.client.multi(),
-      seen = [],
-    }: { txn?: Redis.Pipeline, seen?: any[] } = {}
-  ): Redis.Pipeline {
+    seen: any[] = [],
+  ): Promise<Array<0 | 1>> {
+    if (!Object.keys(obj).length) return [];
     if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
-    seen.push(obj);
+    if (isObject(obj)) seen.push(obj);
 
     if (Array.isArray(obj)) {
       const copy: any = {};
@@ -61,29 +59,34 @@ export default class Storage {
       obj = copy;
     }
 
-    for (const [name, val] of Object.entries(obj)) {
-      if (typeof val === 'object' && !(val instanceof Reference) && val !== null) {
+    const queries: PromiseLike<Array<0 | 1>>[] = [];
+    const toSet = Object.entries(obj).map(([name, val]): [string, string] => {
+      if (isObject(val) && !(val instanceof Reference)) {
         const newKey = `${key}.${name}`;
-        this._upsert(newKey, val, { txn, seen });
-        txn.hset(key, name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT));
-      } else {
-        txn.hset(key, name, val);
+        queries.push(this._upsert(newKey, val, seen));
+        return [name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString()];
       }
-    }
 
-    return txn;
+      return [name, val];
+    }).reduce((acc, kv) => acc.concat(kv), [] as string[]);
+
+    const first = toSet.splice(0, 2);
+    if (first.length === 2) queries.unshift(this.client.hmset(key, first[0], first[1], ...toSet).then(r => [r]));
+
+    const results = await Promise.all(queries);
+    return results.reduce((acc, result) => acc.concat(result), []);
   }
 
-  public async set(key: string, obj: object): Promise<any> {
+  public async set(key: string, obj: object): Promise<Array<0 | 1>> {
     await this.delete(key);
     return this.upsert(key, obj);
   }
 
-  public async get(key: string, opts?: { type?: ReferenceType, depth?: number }) {
-    return this._get(key, opts);
+  public async get<T = any>(key: string, opts?: { type?: ReferenceType, depth?: number }): Promise<T | null> {
+    return this._get<T>(key, opts);
   }
 
-  protected async _get(
+  protected async _get<T>(
     key: string,
     {
       type = ReferenceType.OBJECT,
@@ -94,19 +97,21 @@ export default class Storage {
       depth?: number;
       currentDepth?: number;
     } = {}
-  ): Promise<any> {
+  ): Promise<T | null> {
     const data = await this.client.hgetall(key);
     if (!Object.keys(data).length) return null;
 
+    const nested: [string, Promise<T | null>][] = [];
     if (depth < 0 || currentDepth < depth) {
       for (const [name, val] of Object.entries(data) as [string, string][]) {
         if (Reference.is(val)) {
           const { type, key: newKey } = new Reference(val).decode();
-          data[name] = await this._get(newKey, { type, depth, currentDepth: currentDepth + 1 });
+          nested.push([name, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);
         }
       }
     }
 
+    await Promise.all(nested.map(async ([name, call]) => data[name] = await call));
     return type === ReferenceType.ARRAY ? Object.values(data) : data;
   }
 
@@ -124,7 +129,7 @@ export default class Storage {
     return Promise.reject(new Error(`error parsing key "${key}" for increment`));
   }
 
-  public keys(key: string): PromiseLike<any[]> {
+  public keys(key: string): PromiseLike<string[]> {
     return this.client.hkeys(key);
   }
 
@@ -136,5 +141,5 @@ export default class Storage {
 export {
   Reference,
   ReferenceType,
-  Storage,
+  Rejects,
 }

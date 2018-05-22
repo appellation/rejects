@@ -13,13 +13,14 @@ let data;
 
   const data = {};
   for (let i = 0; i < 1e5; i++) data[i.toString()] = i;
+  const nest = Array(100).fill('test').join('.');
 
   performance.mark('begin set');
-  await s.upsert('test', data);
+  await s.upsert(nest, data);
   performance.mark('end set');
 
   performance.mark('begin get');
-  await s.get('test');
+  await s.get(nest);
   performance.mark('end get');
 
   performance.measure('get', 'begin get', 'end get');

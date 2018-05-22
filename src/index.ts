@@ -1,9 +1,6 @@
 import * as Redis from 'ioredis';
+import { chunk, isObjectLike, flatten, set } from 'lodash';
 import Reference, { ReferenceType } from './Reference';
-
-function isObject(obj: any): obj is object {
-  return typeof obj === 'object' && obj !== null;
-}
 
 export default class Rejects {
   constructor(public readonly client: Redis.Redis) {}
@@ -47,7 +44,7 @@ export default class Rejects {
   ): Promise<Array<0 | 1>> {
     if (!Object.keys(obj).length) return [];
     if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
-    if (isObject(obj)) seen.push(obj);
+    if (isObjectLike(obj)) seen.push(obj);
 
     if (Array.isArray(obj)) {
       const copy: any = {};
@@ -60,21 +57,25 @@ export default class Rejects {
     }
 
     const queries: PromiseLike<Array<0 | 1>>[] = [];
-    const toSet = Object.entries(obj).map(([name, val]): [string, string] => {
-      if (isObject(val) && !(val instanceof Reference)) {
+    const toSet = flatten(Object.entries(obj).map(([name, val]): [string, string] => {
+      if (isObjectLike(val) && !(val instanceof Reference)) {
         const newKey = `${key}.${name}`;
         queries.push(this._upsert(newKey, val, seen));
         return [name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString()];
       }
 
       return [name, val];
-    }).reduce((acc, kv) => acc.concat(kv), [] as string[]);
+    }));
 
-    const first = toSet.splice(0, 2);
-    if (first.length === 2) queries.unshift(this.client.hmset(key, first[0], first[1], ...toSet).then(r => [r]));
+    // limit function paramters to avoid breaking things
+    let chunks: string[][] = chunk(toSet, 65e3);
+    for (const chunk of chunks) {
+      const first = chunk.splice(0, 2);
+      if (first.length === 2) queries.unshift(this.client.hmset(key, first[0], first[1], ...chunk).then(r => [r]));
+    }
 
     const results = await Promise.all(queries);
-    return results.reduce((acc, result) => acc.concat(result), []);
+    return flatten(results);
   }
 
   public async set(key: string, obj: object): Promise<Array<0 | 1>> {

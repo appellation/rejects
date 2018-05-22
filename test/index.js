@@ -11,39 +11,22 @@ let data;
   await r.flushall();
   performance.mark('start');
 
-  performance.mark('pre-set 1');
-  await s.set(`guilds.${guild.id}`, guild);
-  performance.mark('post-set 1')
+  const data = {};
+  for (let i = 0; i < 1e5; i++) data[i.toString()] = i;
 
-  performance.mark('pre-get 1');
-  data = await s.get('guilds');
-  performance.mark('post-get 1');
-  console.log(data);
+  performance.mark('begin set');
+  await s.upsert('test', data);
+  performance.mark('end set');
 
-  // await s.upsert(`guilds.${guild.id}.members`, { id: { nick: 'meme2' } });
-  // console.log(await s.get(`guilds.${guild.id}.members`));
+  performance.mark('begin get');
+  await s.get('test');
+  performance.mark('end get');
 
-  performance.mark('pre-set 2');
-  await s.set('thing', { test: '1' });
-  performance.mark('post-set 2');
+  performance.measure('get', 'begin get', 'end get');
+  performance.measure('set', 'begin set', 'end set');
 
-  performance.mark('pre-get 2');
-  data = await s.get('thing');
-  performance.mark('post-get 2');
-  console.log(data);
+  console.log('get', performance.getEntriesByName('get'));
+  console.log('set', performance.getEntriesByName('set'));
 
-  await s.incr('thing.test', 1);
-  console.log(await s.get('thing'));
-
-  // await s.set(`guilds.${guild.id}`, guild);
-  // console.log(await s.get('guilds'));
-  console.log(await r.info('commandstats'));
-
-  performance.measure('large set', 'pre-set 1', 'post-set 1');
-  performance.measure('large get', 'pre-get 1', 'post-get 1');
-
-  console.log('large set', performance.getEntriesByName('large set')[0]);
-  console.log('large get', performance.getEntriesByName('large get')[0]);
-
-  r.disconnect();
+  // r.disconnect();
 })();

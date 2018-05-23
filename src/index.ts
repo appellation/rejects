@@ -1,9 +1,14 @@
 import * as Redis from 'ioredis';
-import { chunk, isObjectLike, flatten } from 'lodash';
+import { chunk, isEmpty, isObjectLike, flatten, mapKeys, mapValues } from 'lodash';
+import hyperid = require('hyperid');
 import Reference, { ReferenceType } from './Reference';
 
 export default class Rejects {
-  constructor(public readonly client: Redis.Redis) {}
+  public generateID: () => string;
+
+  constructor(public readonly client: Redis.Redis) {
+    this.generateID = hyperid();
+  }
 
   public async delete(key: string): Promise<number> {
     const data = await this.client.hgetall(key);
@@ -34,48 +39,35 @@ export default class Rejects {
       }
     }
 
-    return this._upsert(key, obj);
+    const queries: Set<PromiseLike<0 | 1>> = new Set();
+    this._upsert(key, obj, queries);
+    return Promise.all(queries).then(flatten);
   }
 
-  protected async _upsert(
+  protected _upsert(
     key: string,
     obj: object,
+    queries: Set<PromiseLike<0 | 1>>,
     seen: any[] = [],
-  ): Promise<Array<0 | 1>> {
-    if (!Object.keys(obj).length) return [];
+  ): void {
+    if (isEmpty(obj)) return;
+
     if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
     if (isObjectLike(obj)) seen.push(obj);
 
-    if (Array.isArray(obj)) {
-      const copy: any = {};
-      for (const elem of obj) {
-        const uuid = Math.random().toString(36).substring(2, 15);
-        copy[uuid] = elem;
-      }
+    if (Array.isArray(obj)) obj = mapKeys(obj, this.generateID);
 
-      obj = copy;
-    }
-
-    const queries: PromiseLike<Array<0 | 1>>[] = [];
-    const toSet = flatten(Object.entries(obj).map(([name, val]): [string, string] => {
+    const toSet = mapValues(obj, (val, nestedKey): string => {
       if (isObjectLike(val) && !(val instanceof Reference)) {
-        const newKey = `${key}.${name}`;
-        queries.push(this._upsert(newKey, val, seen));
-        return [name, new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString()];
+        const newKey = `${key}.${nestedKey}`;
+        this._upsert(newKey, val, queries, seen);
+        return new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString();
       }
 
-      return [name, val];
-    }));
+      return val;
+    });
 
-    // limit function paramters to avoid breaking things
-    let chunks: string[][] = chunk(toSet, 65e3);
-    for (const chunk of chunks) {
-      const first = chunk.splice(0, 2);
-      if (first.length === 2) queries.unshift(this.client.hmset(key, first[0], first[1], ...chunk).then(r => [r]));
-    }
-
-    const results = await Promise.all(queries);
-    return flatten(results);
+    queries.add(this.client.hmset(key, toSet));
   }
 
   public async set(key: string, obj: object): Promise<Array<0 | 1>> {

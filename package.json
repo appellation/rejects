@@ -6,7 +6,8 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "prepublish": "gulp",
-    "dev": "gulp && node test/index.js"
+    "start:dev": "gulp && node test/index.js",
+    "start:profile": "gulp && node --prof test/index.js"
   },
   "repository": "https://github.com/appellation/rejects.git",
   "author": "Will Nelson <nelson.will@live.com>",
@@ -26,6 +27,7 @@
     "ioredis": "^3.2.2"
   },
   "dependencies": {
+    "hyperid": "^1.3.1",
     "lodash": "^4.17.10"
   }
 }

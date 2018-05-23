@@ -13,7 +13,7 @@ let data;
 
   const data = {};
   for (let i = 0; i < 1e5; i++) data[i.toString()] = i;
-  const nest = Array(100).fill('test').join('.');
+  const nest = Array(1).fill('test').join('.');
 
   performance.mark('begin set');
   await s.upsert(nest, data);
@@ -29,5 +29,5 @@ let data;
   console.log('get', performance.getEntriesByName('get'));
   console.log('set', performance.getEntriesByName('set'));
 
-  // r.disconnect();
+  r.disconnect();
 })();

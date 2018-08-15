@@ -6,10 +6,10 @@ Simple abstractions for storing complex JSON data in Redis. Supports storage of 
 
 ```js
 const Redis = require('ioredis');
-const Storage = require('rejects');
+const { Rejects } = require('rejects');
 
 const r = new Redis();
-const s = new Storage(r);
+const s = new Rejects(r);
 
 s.set('some key', {
   id: 'some id',

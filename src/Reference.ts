@@ -13,22 +13,9 @@ export default class Reference extends String {
     else super(`ref:${type}:${key}`);
   }
 
-  public decode() {
-    const [ref, type, key] = this.split(':');
-    if (ref !== 'ref' || !type || !key) throw new Error('attempted to derive reference from non-reference key');
-
-    let refType: ReferenceType;
-    switch (type) {
-      case 'arr':
-        refType = ReferenceType.ARRAY;
-        break;
-      case 'obj':
-        refType = ReferenceType.OBJECT;
-        break;
-      default:
-        throw new Error('attempted to derive reference from non-reference key');
-    }
-
-    return { type: refType, key };
+  public decode(): { type: ReferenceType, key: string } {
+    const [ref, type, key] = this.split(':') as [string, ReferenceType, string];
+    if (ref !== 'ref' || !type || !key || !(type in ReferenceType)) throw new Error('attempted to derive reference from non-reference key');
+    return { type, key };
   }
 }

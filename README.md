@@ -6,10 +6,10 @@ Simple abstractions for storing complex JSON data in Redis. Supports storage of 
 
 ```js
 const Redis = require('ioredis');
-const Storage = require('rejects');
+const { Rejects } = require('rejects');
 
 const r = new Redis();
-const s = new Storage(r);
+const s = new Rejects(r);
 
 s.set('some key', {
   id: 'some id',
@@ -65,8 +65,9 @@ References can be created within arrays to create arrays of references.  The `Re
 
 ## Caveats
 
-- do not store hashes with values beginning with `ref:`, as this is will confuse the library and produce errors when fetching nested data.
-- array entries can never be overridden unless you delete the entire entry and re-add the elements.
+- Do not store hashes with values beginning with `ref:`, as this is will confuse the library and produce errors when fetching nested data.
+- Array entries are not actually stored as arrays, and as such order will not be preserved when fetching. It also follows that:
+- Array entries can never be overridden unless you delete the entire entry and re-add the elements.
 
 ## Reference
 

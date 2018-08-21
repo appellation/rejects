@@ -104,9 +104,7 @@ export default class Rejects {
       const nested: [string, Promise<T | null>][] = [];
       for (const [key, val] of Object.entries(data) as [string, string][]) {
         if (!Reference.is(val)) {
-          for (const [k, v] of Object.entries(data) as [string, string][]) {
-            if (v.startsWith('raw:')) data[k] = v.slice(4); // remove conditional in next major version
-          }
+          if (key.startsWith('raw:')) data[key] = val.slice(4); // remove conditional in next major version
         } else {
           const { type, key: newKey } = new Reference(val).decode();
           nested.push([key, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);

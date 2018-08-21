@@ -1,4 +1,3 @@
-import { performance } from 'perf_hooks';
 import * as Redis from 'ioredis';
 import { isEmpty, isObjectLike } from 'lodash';
 import hyperid = require('hyperid');
@@ -40,13 +39,7 @@ export default class Rejects {
       }
     }
 
-    console.log(performance.now());
-    const p = this._upsert(key, obj);
-    console.log(performance.now());
-    return p.exec().then(r => {
-      console.log(performance.now())
-      return r;
-    });
+    return this._upsert(key, obj).exec();
   }
 
   protected _upsert(

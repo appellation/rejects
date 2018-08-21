@@ -17,10 +17,11 @@
     "@types/ioredis": "^3.2.6",
     "@types/lodash": "^4.14.109",
     "del": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^4.0.1",
     "ioredis": "^3.2.2",
+    "merge-stream": "^1.0.1",
     "typescript": "^2.7.2"
   },
   "peerDependencies": {

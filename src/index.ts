@@ -1,5 +1,6 @@
+import { performance } from 'perf_hooks';
 import * as Redis from 'ioredis';
-import { chunk, isEmpty, isObjectLike, flatten, mapKeys, mapValues } from 'lodash';
+import { isEmpty, isObjectLike } from 'lodash';
 import hyperid = require('hyperid');
 import Reference, { ReferenceType } from './Reference';
 
@@ -16,7 +17,7 @@ export default class Rejects {
 
     for (const ref of Object.values(data) as string[]) {
       if (Reference.is(ref)) {
-        const { type, key: newKey } = new Reference(ref).decode();
+        const { key: newKey } = new Reference(ref).decode();
         promises.push(this.delete(newKey));
       }
     }
@@ -25,7 +26,7 @@ export default class Rejects {
     return this.client.del(key);
   }
 
-  public upsert(key: string, obj: object): Promise<Array<0 | 1>> {
+  public upsert(key: string, obj: object): PromiseLike<Array<0 | 1>> {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -39,35 +40,47 @@ export default class Rejects {
       }
     }
 
-    const queries: Set<PromiseLike<0 | 1>> = new Set();
-    this._upsert(key, obj, queries);
-    return Promise.all(queries).then(flatten);
+    console.log(performance.now());
+    const p = this._upsert(key, obj);
+    console.log(performance.now());
+    return p.exec().then(r => {
+      console.log(performance.now())
+      return r;
+    });
   }
 
   protected _upsert(
-    key: string,
+    rootKey: string,
     obj: object,
-    queries: Set<PromiseLike<0 | 1>>,
-    seen: any[] = [],
-  ): void {
-    if (isEmpty(obj)) return;
+    opts: {
+      pipeline: Redis.Pipeline;
+      seen: any[];
+    } = {
+      pipeline: this.client.pipeline(),
+      seen: [],
+    },
+  ): Redis.Pipeline {
+    if (isEmpty(obj)) return opts.pipeline;
 
-    if (seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
-    if (isObjectLike(obj)) seen.push(obj);
+    if (opts.seen.includes(obj)) throw new TypeError('cannot store circular structure in Redis');
+    if (isObjectLike(obj)) opts.seen.push(obj);
 
-    if (Array.isArray(obj)) obj = mapKeys(obj, this.generateID);
-
-    const toSet = mapValues(obj, (val, nestedKey): string => {
-      if (isObjectLike(val) && !(val instanceof Reference)) {
-        const newKey = `${key}.${nestedKey}`;
-        this._upsert(newKey, val, queries, seen);
-        return new Reference(newKey, Array.isArray(val) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString();
+    const toSet: string[] = [];
+    const isArray = Array.isArray(obj);
+    for (let [key, value] of Object.entries(obj)) {
+      if (isArray) key = this.generateID();
+      if (isObjectLike(value) && !(value instanceof Reference)) {
+        const newKey = rootKey.concat('.', key);
+        this._upsert(newKey, value, opts);
+        value = new Reference(newKey, Array.isArray(value) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString()
+      } else {
+        value = `raw:${value}`;
       }
 
-      return val;
-    });
+      toSet.push(key, value);
+    }
 
-    queries.add(this.client.hmset(key, toSet));
+    return opts.pipeline.hmset(rootKey, toSet);
   }
 
   public async set(key: string, obj: object): Promise<Array<0 | 1>> {
@@ -80,7 +93,7 @@ export default class Rejects {
   }
 
   protected async _get<T>(
-    key: string,
+    rootKey: string,
     {
       type = ReferenceType.OBJECT,
       depth = -1,
@@ -91,20 +104,25 @@ export default class Rejects {
       currentDepth?: number;
     } = {}
   ): Promise<T | null> {
-    const data = await this.client.hgetall(key);
+    const data = await this.client.hgetall(rootKey);
     if (!Object.keys(data).length) return null;
 
-    const nested: [string, Promise<T | null>][] = [];
     if (depth < 0 || currentDepth < depth) {
-      for (const [name, val] of Object.entries(data) as [string, string][]) {
-        if (Reference.is(val)) {
+      const nested: [string, Promise<T | null>][] = [];
+      for (const [key, val] of Object.entries(data) as [string, string][]) {
+        if (!Reference.is(val)) {
+          for (const [k, v] of Object.entries(data) as [string, string][]) {
+            if (v.startsWith('raw:')) data[k] = v.slice(4); // remove conditional in next major version
+          }
+        } else {
           const { type, key: newKey } = new Reference(val).decode();
-          nested.push([name, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);
+          nested.push([key, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);
         }
       }
+
+      await Promise.all(nested.map(async ([key, call]) => data[key] = await call));
     }
 
-    await Promise.all(nested.map(async ([name, call]) => data[name] = await call));
     return type === ReferenceType.ARRAY ? Object.values(data) : data;
   }
 

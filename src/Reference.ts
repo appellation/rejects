@@ -3,6 +3,8 @@ export enum ReferenceType {
   OBJECT = 'obj',
 }
 
+const types = new Set(Object.values(ReferenceType));
+
 export default class Reference extends String {
   static is(str: string) {
     return str.startsWith('ref:');
@@ -15,7 +17,7 @@ export default class Reference extends String {
 
   public decode(): { type: ReferenceType, key: string } {
     const [ref, type, key] = this.split(':') as [string, ReferenceType, string];
-    if (ref !== 'ref' || !type || !key || !(type in ReferenceType)) throw new Error('attempted to derive reference from non-reference key');
+    if (ref !== 'ref' || !type || !key || !types.has(type)) throw new Error('attempted to derive reference from non-reference key');
     return { type, key };
   }
 }

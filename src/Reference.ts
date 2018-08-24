@@ -4,10 +4,8 @@ export enum ReferenceType {
 }
 
 export default class Reference extends String {
-  static PATTERN = /ref:(arr|obj):(.+)/;
-
   static is(str: string | Reference) {
-    return Reference.PATTERN.test(str.toString());
+    return str.startsWith('ref:');
   }
 
   public type: ReferenceType;
@@ -16,11 +14,10 @@ export default class Reference extends String {
   constructor(key: string, type = ReferenceType.OBJECT) {
     if (Reference.is(key)) {
       super(key);
-      const match = this.match(Reference.PATTERN);
-      if (!match) throw new Error(`invalid reference: ${this}`);
 
-      this.type = match[1] as ReferenceType;
-      this.key = match[2];
+      // ref:arr:memes
+      this.type = key.substring(4, 7) as ReferenceType;
+      this.key = key.substring(8);
     } else {
       super(`ref:${type}:${key}`);
       this.type = type;

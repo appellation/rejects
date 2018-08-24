@@ -101,7 +101,7 @@ export default class Rejects {
     const data = await this.client.hgetall(rootKey);
 
     // handle empty data
-    if (!Object.keys(data).length) {
+    if (isEmpty(data)) {
       const exists = await this.client.exists(rootKey);
       if (exists || !type) return null;
       return type === ReferenceType.ARRAY ? [] as any : {} as any;

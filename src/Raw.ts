@@ -7,26 +7,31 @@ export enum RawType {
   SYMBOL = 'symbol',
 }
 
+const types = ['string', 'number', 'boolean', 'null', 'undefined', 'symbol'];
+
 export type Primitive = boolean | number | string | symbol | null | undefined;
 
 export default class Raw extends String {
-  public static isPrimitive(val: unknown): val is Primitive {
+  public static isPrimitive(val: any): val is Primitive {
     return val === null || !['function', 'object'].includes(typeof val);
   }
 
-  public static is(str: unknown): str is string {
+  public static is(str: any): str is string {
     return typeof str === 'string' && str.startsWith('raw:');
   }
 
   public type: RawType;
   public value: Primitive;
 
-  constructor(val: unknown) {
-    if (!Raw.isPrimitive(val)) throw new Error('attempted to derive raw value from non-primitive');
-
-    let type: string;
+  constructor(val: Primitive) {
+    let type: string | undefined;
     if (Raw.is(val)) {
-      [, type, val as string] = val.split(':');
+      const slice = val.slice(4);
+      type = types.find(t => slice.startsWith(t));
+      if (!type) throw new Error(`invalid raw type for value ${val}`);
+
+      super(val);
+      val = slice.slice(type.length);
 
       switch (type) {
         case RawType.BOOLEAN:
@@ -50,8 +55,6 @@ export default class Raw extends String {
         default:
           throw new Error(`attempted to derive raw value from invalid type "${type}"`);
       }
-
-      super(val);
     } else {
       type = val === null ? 'null' : typeof val;
       super(`raw:${type}:${String(val)}`);

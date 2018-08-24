@@ -1,7 +1,7 @@
 import * as Redis from 'ioredis';
 import { isEmpty, isObjectLike } from 'lodash';
 import hyperid = require('hyperid');
-import Raw from './Raw';
+import Raw, { RawType } from './Raw';
 import Reference, { ReferenceType } from './Reference';
 
 export default class Rejects {
@@ -150,6 +150,8 @@ export default class Rejects {
 }
 
 export {
+  Raw,
+  RawType,
   Reference,
   ReferenceType,
   Rejects,

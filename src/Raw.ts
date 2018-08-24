@@ -28,10 +28,10 @@ export default class Raw extends String {
     if (Raw.is(val)) {
       const slice = val.slice(4);
       type = types.find(t => slice.startsWith(t));
-      if (!type) throw new Error(`invalid raw type for value ${val}`);
+      if (!type || !type.length) throw new Error(`invalid raw type for value ${val}`);
 
       super(val);
-      val = slice.slice(type.length);
+      val = slice.slice(type.length + 1);
 
       switch (type) {
         case RawType.BOOLEAN:

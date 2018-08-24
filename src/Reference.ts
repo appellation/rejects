@@ -4,19 +4,27 @@ export enum ReferenceType {
 }
 
 export default class Reference extends String {
+  static PATTERN = /ref:(arr|obj):(.+)/;
+
   static is(str: string | Reference) {
-    return str.startsWith('ref:');
+    return Reference.PATTERN.test(str.toString());
   }
 
   public type: ReferenceType;
   public key: string;
 
   constructor(key: string, type = ReferenceType.OBJECT) {
-    if (Reference.is(key)) super(key);
-    else super(`ref:${type}:${key}`);
+    if (Reference.is(key)) {
+      super(key);
+      const match = this.match(Reference.PATTERN);
+      if (!match) throw new Error(`invalid reference: ${this}`);
 
-    [, type, key] = this.split(':') as [string, ReferenceType, string];
-    this.type = type;
-    this.key = key;
+      this.type = match[1] as ReferenceType;
+      this.key = match[2];
+    } else {
+      super(`ref:${type}:${key}`);
+      this.type = type;
+      this.key = key;
+    }
   }
 }

@@ -112,9 +112,11 @@ export default class Rejects {
       for (const [key, val] of Object.entries(data) as [string, string][]) {
         if (Raw.is(val)) {
           data[key] = new Raw(val).value;
-        } else {
+        } else if (Reference.is(val)) {
           const { type, key: newKey } = new Reference(val);
           nested.push([key, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);
+        } else {
+          throw new Error(`unrecognized hash entry "${key}"."${val}" on key ${rootKey}`);
         }
       }
 

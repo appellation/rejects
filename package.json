@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "typings/index.d.ts",
   "scripts": {
-    "prepublish": "gulp",
+    "prepare": "gulp",
     "build": "gulp",
     "start:bench": "gulp && node test/bench.js",
     "start:profile": "gulp && node --prof test/index.js"

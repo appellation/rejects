@@ -26,8 +26,9 @@ let data;
   performance.mark('end set');
 
   performance.mark('begin get');
-  console.log(await s.get(nest));
+  const out = await s.get(nest);
   performance.mark('end get');
+  console.log(out);
 
   performance.measure('get', 'begin get', 'end get');
   performance.measure('set', 'begin set', 'end set');

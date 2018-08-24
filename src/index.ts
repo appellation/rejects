@@ -26,7 +26,7 @@ export default class Rejects {
     return this.client.del(key);
   }
 
-  public upsert(key: string, obj: object): PromiseLike<[Error | null, 'OK'][]> {
+  public upsert(key: string, obj: object, pipeline: Redis.Pipeline = this.client.pipeline()): PromiseLike<[Error | null, 'OK'][]> {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -40,7 +40,7 @@ export default class Rejects {
       }
     }
 
-    return this._upsert(key, obj).exec();
+    return this._upsert(key, obj, { seen: [], pipeline }).exec();
   }
 
   protected _upsert(
@@ -49,9 +49,6 @@ export default class Rejects {
     opts: {
       pipeline: Redis.Pipeline;
       seen: any[];
-    } = {
-      pipeline: this.client.pipeline(),
-      seen: [],
     },
   ): Redis.Pipeline {
     if (isEmpty(obj)) return opts.pipeline;
@@ -77,9 +74,9 @@ export default class Rejects {
     return opts.pipeline.hmset(rootKey, toSet);
   }
 
-  public async set(key: string, obj: object): Promise<[Error | null, 'OK'][]> {
+  public async set(key: string, obj: object, pipeline?: Redis.Pipeline): Promise<[Error | null, 'OK'][]> {
     await this.delete(key);
-    return this.upsert(key, obj);
+    return this.upsert(key, obj, pipeline);
   }
 
   public async get<T = any>(key: string, opts?: { type?: ReferenceType, depth?: number }): Promise<T | null> {

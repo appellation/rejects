@@ -1,6 +1,7 @@
 import * as Redis from 'ioredis';
 import { isEmpty, isObjectLike } from 'lodash';
 import hyperid = require('hyperid');
+import Raw from './Raw';
 import Reference, { ReferenceType } from './Reference';
 
 export default class Rejects {
@@ -16,7 +17,7 @@ export default class Rejects {
 
     for (const ref of Object.values(data) as string[]) {
       if (Reference.is(ref)) {
-        const { key: newKey } = new Reference(ref).decode();
+        const { key: newKey } = new Reference(ref);
         promises.push(this.delete(newKey));
       }
     }
@@ -25,7 +26,7 @@ export default class Rejects {
     return this.client.del(key);
   }
 
-  public upsert(key: string, obj: object): PromiseLike<Array<0 | 1>> {
+  public upsert(key: string, obj: object): PromiseLike<[Error | null, 'OK'][]> {
     if (key.includes('.')) {
       const route = key.split('.');
       let newKey: string | undefined;
@@ -62,12 +63,12 @@ export default class Rejects {
     const isArray = Array.isArray(obj);
     for (let [key, value] of Object.entries(obj)) {
       if (isArray) key = this.generateID();
-      if (isObjectLike(value) && !(value instanceof Reference)) {
+      if (Raw.isPrimitive(value)) {
+        value = new Raw(value).toString();
+      } else {
         const newKey = rootKey.concat('.', key);
         this._upsert(newKey, value, opts);
-        value = new Reference(newKey, Array.isArray(value) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString()
-      } else {
-        value = `raw:${value}`;
+        value = new Reference(newKey, Array.isArray(value) ? ReferenceType.ARRAY : ReferenceType.OBJECT).toString();
       }
 
       toSet.push(key, value);
@@ -76,7 +77,7 @@ export default class Rejects {
     return opts.pipeline.hmset(rootKey, toSet);
   }
 
-  public async set(key: string, obj: object): Promise<Array<0 | 1>> {
+  public async set(key: string, obj: object): Promise<[Error | null, 'OK'][]> {
     await this.delete(key);
     return this.upsert(key, obj);
   }
@@ -98,15 +99,21 @@ export default class Rejects {
     } = {}
   ): Promise<T | null> {
     const data = await this.client.hgetall(rootKey);
-    if (!Object.keys(data).length) return null;
+
+    // handle empty data
+    if (!Object.keys(data).length) {
+      const exists = await this.client.exists(rootKey);
+      if (exists || !type) return null;
+      return type === ReferenceType.ARRAY ? [] as any : {} as any;
+    }
 
     if (depth < 0 || currentDepth < depth) {
       const nested: [string, Promise<T | null>][] = [];
       for (const [key, val] of Object.entries(data) as [string, string][]) {
-        if (!Reference.is(val)) {
-          if (key.startsWith('raw:')) data[key] = val.slice(4); // remove conditional in next major version
+        if (Raw.is(val)) {
+          data[key] = new Raw(val).value;
         } else {
-          const { type, key: newKey } = new Reference(val).decode();
+          const { type, key: newKey } = new Reference(val);
           nested.push([key, this._get(newKey, { type, depth, currentDepth: currentDepth + 1 })]);
         }
       }

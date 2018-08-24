@@ -6,7 +6,9 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "prepublish": "gulp",
-    "start:dev": "gulp && node test/index.js",
+    "test": "gulp && jest",
+    "build": "gulp",
+    "start:bench": "gulp && node test/bench.js",
     "start:profile": "gulp && node --prof test/index.js"
   },
   "repository": "https://github.com/appellation/rejects.git",
@@ -16,13 +18,14 @@
   "devDependencies": {
     "@types/ioredis": "^3.2.6",
     "@types/lodash": "^4.14.109",
+    "@types/node": "^10.7.1",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^4.0.1",
     "ioredis": "^3.2.2",
     "merge-stream": "^1.0.1",
-    "typescript": "^2.7.2"
+    "typescript": "^3.0.1"
   },
   "peerDependencies": {
     "ioredis": "^3.2.2"

@@ -7,8 +7,22 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch test",
-      "program": "${workspaceFolder}\\test\\index.js",
+      "name": "Test",
+      "program": "${workspaceRoot}/node_modules/.bin/jest",
+      "runtimeArgs": [
+        "-i",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "outFiles": [
+        "${workspaceRoot}/dist/**/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch bench",
+      "program": "${workspaceFolder}/test/bench.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ],

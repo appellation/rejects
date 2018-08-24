@@ -1,4 +1,4 @@
-const { default: Storage, Reference } = require('../dist');
+const { default: Storage } = require('../dist');
 const Redis = require('ioredis');
 const { performance, PerformanceObserver } = require('perf_hooks');
 const guild = require('./guild.json');
@@ -26,7 +26,7 @@ let data;
   performance.mark('end set');
 
   performance.mark('begin get');
-  await s.get(nest);
+  console.log(await s.get(nest));
   performance.mark('end get');
 
   performance.measure('get', 'begin get', 'end get');
